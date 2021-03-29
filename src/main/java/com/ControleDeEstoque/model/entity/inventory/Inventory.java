@@ -22,4 +22,15 @@ public class Inventory {
 	
 	@OneToMany(mappedBy = "inventory")
 	private List<Section> section = new ArrayList<>();
+	
+	public Inventory() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Inventory(String typeInventory) {
+		super();
+		this.typeInventory = typeInventory;
+	}
+	
+	
 }

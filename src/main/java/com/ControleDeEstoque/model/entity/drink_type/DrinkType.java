@@ -13,6 +13,9 @@ public class DrinkType {
 	private Long idDrinkType;
 	
 	private String drinkType;
-	
-	
+
+	public DrinkType(String drinkType) {
+		super();
+		this.drinkType = drinkType;
+	}	
 }

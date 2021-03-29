@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 
@@ -14,9 +16,20 @@ public class Drink {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idDrink;
 	
-	private int drinkType;
+	@ManyToOne
+	@JoinColumn(name = "idDrinkType")
+	private DrinkType drinkType;
 	
 	private String drinkName;
 	
 	private Double drinkVolume;
+
+	public Drink(DrinkType drinkType, String drinkName, Double drinkVolume) {
+		super();
+		this.drinkType = drinkType;
+		this.drinkName = drinkName;
+		this.drinkVolume = drinkVolume;
+	}
+	
+	
 }

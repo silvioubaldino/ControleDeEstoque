@@ -1,9 +1,18 @@
 package com.ControleDeEstoque.model.entity.drink_moviment;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.ControleDeEstoque.model.entity.drink.Drink;
+import com.ControleDeEstoque.model.entity.section.Section;
 
 @Entity
 public class DrinkMoviment {
@@ -12,15 +21,20 @@ public class DrinkMoviment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idMov;
 	
-	private int idDrink;
+	@ManyToOne
+	@JoinColumn(name = "idDrink")
+	private Drink drink;
 	
-	private int idSection;
+	@ManyToOne
+	@JoinColumn(name = "idSection")
+	private Section section;
 	
 	private String movimentType;
 	
 	private Double volumeMov;
 	
-	private String dateMov;
+	@CreationTimestamp
+	private LocalDateTime dateMov;
 	
 	private String responsible;
 	
