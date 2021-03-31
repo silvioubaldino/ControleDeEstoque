@@ -20,22 +20,35 @@ public class DrinkMoviment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idMov;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "idDrink")
 	private Drink drink;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "idSection")
 	private Section section;
-	
+
 	private String movimentType;
-	
+
 	private Double volumeMov;
-	
+
 	@CreationTimestamp
 	private LocalDateTime dateMov;
-	
+
 	private String responsible;
-	
+
+	public DrinkMoviment() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public DrinkMoviment(Drink drink, Section section, String movimentType, Double volumeMov, String responsible) {
+		super();
+		this.drink = drink;
+		this.section = section;
+		this.movimentType = movimentType;
+		this.volumeMov = volumeMov;
+		this.responsible = responsible;
+	}
+
 }
