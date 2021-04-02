@@ -1,5 +1,6 @@
 package com.ControleDeEstoque.model.entity.drink;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
+import com.sun.istack.NotNull;
 
 @Entity
 public class Drink {
@@ -18,19 +20,20 @@ public class Drink {
 
 	@ManyToOne
 	@JoinColumn(name = "idDrinkType")
+	@NotNull
 	private DrinkType drinkType;
 
+	@Column(unique = true)
+	@NotNull
 	private String drinkName;
 
 	private Double drinkVolume;
 
 	public Drink() {
-		// TODO Auto-generated constructor stub
 	}
 
-	public Drink(DrinkType drinkType, String drinkName, Double drinkVolume) {
+	public Drink(String drinkName, Double drinkVolume) {
 		super();
-		this.drinkType = drinkType;
 		this.drinkName = drinkName;
 		this.drinkVolume = drinkVolume;
 	}
@@ -47,8 +50,8 @@ public class Drink {
 		return drinkType;
 	}
 
-	public void setDrinkType(DrinkType drinkType) {
-		this.drinkType = drinkType;
+	public void setDrinkType(DrinkType drinkType2) {
+		this.drinkType = drinkType2;
 	}
 
 	public String getDrinkName() {

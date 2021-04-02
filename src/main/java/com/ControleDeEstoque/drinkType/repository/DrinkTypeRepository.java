@@ -6,4 +6,5 @@ import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 
 public interface DrinkTypeRepository extends JpaRepository<DrinkType, Long>{
 
+	DrinkType findDrinkTypeByidDrinkType(Long idDrinkType);
 }

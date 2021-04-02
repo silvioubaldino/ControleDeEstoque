@@ -20,6 +20,23 @@ public class DrinkType {
 	}
 
 	public DrinkType() {
-		// TODO Auto-generated constructor stub
 	}
+
+	public Long getIdDrinkType() {
+		return idDrinkType;
+	}
+
+	public void setIdDrinkType(Long idDrinkType) {
+		this.idDrinkType = idDrinkType;
+	}
+
+	public String getDrinkType() {
+		return drinkType;
+	}
+
+	public void setDrinkType(String drinkType) {
+		this.drinkType = drinkType;
+	}
+	
+	
 }
