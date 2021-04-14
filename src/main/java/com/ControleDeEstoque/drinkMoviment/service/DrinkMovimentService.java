@@ -55,6 +55,44 @@ public class DrinkMovimentService {
 		return drinkMoviments;
 	}
 
+	public List<Section> findSectionsToInsert (DrinkType drinkType, Double volumeMov) throws Exception {
+		List<Section> allSections = sectionService.findAll();
+		List<Section> sectionsToInsert= new ArrayList<>();
+		for(Section section: allSections) {
+			DrinkType eachDrinkType = section.getDrinkType();
+			if(eachDrinkType == null) {
+				if (volumeMov <= sectionService.getCapacity(drinkType)) {
+					sectionsToInsert.add(section);
+				}
+			}else if(eachDrinkType == drinkType){				
+				if(volumeMov <= sectionService.getFree(section)) {
+					sectionsToInsert.add(section);
+				}				
+			}
+		}
+		if(sectionsToInsert.size() == 0) {
+			throw new Exception("Nenhuma seção tem espaço para " + volumeMov);
+		}
+		return sectionsToInsert;
+	}
+	
+	public List<Section> findSectionsToRemove (DrinkType drinkType, Double volumeMov) throws Exception {
+		List<Section> allSections = sectionService.findAll();
+		List<Section> sectionsToRemove= new ArrayList<>();
+		for(Section section: allSections) {
+			DrinkType eachDrinkType = section.getDrinkType();
+			if(eachDrinkType == drinkType){				
+				if(volumeMov <= section.getBusy()) {
+					sectionsToRemove.add(section);
+				}				
+			}
+		}
+		if(sectionsToRemove.size() == 0) {
+			throw new Exception("Nenhuma seção tem " + volumeMov + " da bebida '" + drinkType.getDrinkType() + "' para retirar.");
+		}
+		return sectionsToRemove;
+	}
+	
 	public DrinkMoviment validDrinkMoviment(DrinkMovimentDTO drinkMovimentDTO) throws Exception {
 		Drink drink = drinkService.findById(drinkMovimentDTO.getIdDrink());
 		Section section = sectionService.findById(drinkMovimentDTO.getIdSection());

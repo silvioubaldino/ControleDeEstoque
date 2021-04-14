@@ -6,6 +6,11 @@ import com.ControleDeEstoque.model.entity.drink.Drink;
 
 public class DrinkDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String drinkName;
 
 	private Double drinkVolume;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ControleDeEstoque.drinkMoviment.DTO.DrinkMovimentDTO;
 import com.ControleDeEstoque.drinkMoviment.service.DrinkMovimentService;
 import com.ControleDeEstoque.model.entity.drink_moviment.DrinkMoviment;
+import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.google.gson.Gson;
 
 @Controller
@@ -69,6 +70,26 @@ public class DrinkMovimentController {
 		}
 	}
 
+	@GetMapping("/sectionsToInsert/{drinkType}/{volumeMov}")
+	public ResponseEntity<String> findSectionsToInsert(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
+		try {
+			String json = new Gson().toJson(drinkMovimentService.findSectionsToInsert(drinkType, volumeMov));
+			return ResponseEntity.status(HttpStatus.OK).body(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/sectionsToRemove/{drinkType}/{volumeMov}")
+	public ResponseEntity<String> findSectionsToRemove(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
+		try {
+			String json = new Gson().toJson(drinkMovimentService.findSectionsToRemove(drinkType, volumeMov));
+			return ResponseEntity.status(HttpStatus.OK).body(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
 	@PostMapping
 	public ResponseEntity<String> save(@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception {
 		try {

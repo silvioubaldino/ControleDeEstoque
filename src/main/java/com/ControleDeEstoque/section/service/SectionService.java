@@ -1,5 +1,7 @@
 package com.ControleDeEstoque.section.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,7 @@ public class SectionService {
 	@Autowired
 	DrinkTypeService drinkTypeService;
 	
-	public Iterable<Section> findAll() {
+	public List<Section> findAll() {
 		return sectionRepository.findAll();
 	}
 	

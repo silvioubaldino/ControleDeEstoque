@@ -6,6 +6,11 @@ import com.ControleDeEstoque.model.entity.section.Section;
 
 public class SectionDTO implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Long idInventory;
 
 	private int capacity;
