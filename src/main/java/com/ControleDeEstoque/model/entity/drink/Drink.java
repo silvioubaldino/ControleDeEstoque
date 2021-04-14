@@ -13,7 +13,6 @@ import com.sun.istack.NotNull;
 
 @Entity
 public class Drink {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idDrink;
@@ -29,6 +28,7 @@ public class Drink {
 
 	private Double drinkVolume;
 
+	
 	public Drink() {
 	}
 

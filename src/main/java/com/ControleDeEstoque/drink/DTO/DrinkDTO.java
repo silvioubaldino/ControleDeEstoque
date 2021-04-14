@@ -1,4 +1,4 @@
-package com.ControleDeEstoque.model.DTO;
+package com.ControleDeEstoque.drink.DTO;
 
 import java.io.Serializable;
 

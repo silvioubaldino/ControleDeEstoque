@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ControleDeEstoque.drink.DTO.DrinkDTO;
 import com.ControleDeEstoque.drink.service.DrinkService;
-import com.ControleDeEstoque.model.DTO.DrinkDTO;
 import com.ControleDeEstoque.model.entity.drink.Drink;
 import com.google.gson.Gson;
 
@@ -52,8 +52,8 @@ public class DrinkController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Drink> saveDrink (@RequestBody DrinkDTO drinkDTO){
-		Drink savedDrink = drinkService.saveDrink(drinkDTO); 
+	public ResponseEntity<Drink> save (@RequestBody DrinkDTO drinkDTO){
+		Drink savedDrink = drinkService.save(drinkDTO); 
 		if (savedDrink != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedDrink);
 		}else {
@@ -61,9 +61,8 @@ public class DrinkController {
 		}
 	}
 	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<ResponseEntity<String>> deleteDrink (@PathVariable Long id) {
-		drinkService.deleteDrink(id);
-		return ResponseEntity.status(HttpStatus.OK).body(findById(id));
+	@DeleteMapping("/{idDrink}")
+	public ResponseEntity<Drink> delete (@PathVariable Long idDrink) {
+		return ResponseEntity.status(HttpStatus.OK).body(drinkService.delete(idDrink));
 	}
 }

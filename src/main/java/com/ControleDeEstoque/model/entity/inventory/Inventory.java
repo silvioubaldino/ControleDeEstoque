@@ -17,12 +17,9 @@ public class Inventory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idInventory;
-	
+
 	private String typeInventory;
-	
-	@OneToMany(mappedBy = "inventory")
-	private List<Section> section = new ArrayList<>();
-	
+
 	public Inventory() {
 		// TODO Auto-generated constructor stub
 	}
@@ -31,6 +28,17 @@ public class Inventory {
 		super();
 		this.typeInventory = typeInventory;
 	}
-	
-	
+
+	public String getTypeInventory() {
+		return typeInventory;
+	}
+
+	public void setTypeInventory(String typeInventory) {
+		this.typeInventory = typeInventory;
+	}
+
+	public Long getIdInventory() {
+		return idInventory;
+	}
+
 }

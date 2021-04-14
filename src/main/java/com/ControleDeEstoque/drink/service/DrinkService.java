@@ -1,13 +1,13 @@
 package com.ControleDeEstoque.drink.service;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ControleDeEstoque.drink.DTO.DrinkDTO;
 import com.ControleDeEstoque.drink.repository.DrinkRepository;
 import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
-import com.ControleDeEstoque.model.DTO.DrinkDTO;
 import com.ControleDeEstoque.model.entity.drink.Drink;
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 
@@ -24,27 +24,30 @@ public class DrinkService {
 		return drinkRepository.findAll();
 	}
 	
-	public Optional<Drink> findById(Long idDrink) {
-		return drinkRepository.findById(idDrink);
+	public Drink findById(Long idDrink) {
+		return drinkRepository.findById(idDrink).get();
 	}
 	
 	public Iterable<Drink> findByName (String name){
 		return drinkRepository.findBydrinkNameIgnoreCase(name);
 	}
 	
-	public Iterable<Drink> findByDrinkType (Long idDrinkType){
-		DrinkType drinkType = drinkTypeService.findDrinkTypeById(idDrinkType);
+	public List<Drink> findByDrinkType (Long idDrinkType){
+		DrinkType drinkType = drinkTypeService.findById(idDrinkType);
 		return drinkRepository.findDrinkByDrinkType(drinkType);
 	}
 	
-	public Drink saveDrink (DrinkDTO drinkDTO) {
+	public Drink save (DrinkDTO drinkDTO) {
 		Drink drink = drinkDTO.mappDrinkDTO(drinkDTO);
-		DrinkType drinkType = drinkTypeService.findDrinkTypeById(drinkDTO.getIdDrinkType());
+		DrinkType drinkType = drinkTypeService.findById(drinkDTO.getIdDrinkType());
 		drink.setDrinkType(drinkType);
 		return drinkRepository.save(drink);		
 	}
 	
-	public void deleteDrink (Long id) {
-		drinkRepository.deleteById(id);
+	public Drink delete (Long idDrink) {
+		Drink drink = findById(idDrink);
+		//TODO tratar erro
+		drinkRepository.deleteById(idDrink);
+		return drink;
 	}
 }
