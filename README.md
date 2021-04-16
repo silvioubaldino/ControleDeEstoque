@@ -6,8 +6,8 @@ Projeto com fim de gerir inicialmente um estoque de bebidas.
 
 Spring Boot<br>
 Banco de dados h2<br>
-JPA Repository<br><br>
-Lombok<br>
+JPA Repository<br>
+Lombok<br><br>
 Eclipse<br>
 Postman<br>
 
