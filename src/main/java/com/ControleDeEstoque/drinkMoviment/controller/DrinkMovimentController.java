@@ -1,23 +1,22 @@
 package com.ControleDeEstoque.drinkMoviment.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ControleDeEstoque.drinkMoviment.DTO.DrinkMovimentDTO;
+import com.ControleDeEstoque.drinkMoviment.exception.DrinkMovimentException;
 import com.ControleDeEstoque.drinkMoviment.service.DrinkMovimentService;
 import com.ControleDeEstoque.model.entity.drink_moviment.DrinkMoviment;
-import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
-import com.google.gson.Gson;
 
-@Controller
+@RestController
 @RequestMapping("/drinkMoviment")
 public class DrinkMovimentController {
 
@@ -25,90 +24,53 @@ public class DrinkMovimentController {
 	DrinkMovimentService drinkMovimentService;
 
 	@GetMapping
-	public ResponseEntity<String> findAll() {
-		String json = new Gson().toJson(drinkMovimentService.findAll());
-		return ResponseEntity.status(HttpStatus.OK).body(json);
+	public List<DrinkMoviment> findAll() {
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findAll();
+		if(drinkMovimentList.size() == 0) {
+			throw new DrinkMovimentException();
+		}
+		return drinkMovimentList;
 	}
 
 	@GetMapping("/{idMov}")
-	public ResponseEntity<String> findById(@PathVariable Long idMov) {
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findById(idMov));
-			return ResponseEntity.status(HttpStatus.OK).body(json);			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Movimentação não cadastrada. (" + e.getMessage() + ")");
-		}
+	public DrinkMoviment findById(@PathVariable Long idMov) {
+		return drinkMovimentService.findById(idMov);
 	}
 
 	@GetMapping("/drink/{idDrink}")
-	public ResponseEntity<String> findByDrink(@PathVariable Long idDrink) {
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findByInventory(idDrink));
-			return ResponseEntity.status(HttpStatus.OK).body(json);			
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bebida não cadastrada. (" + e.getMessage() + ")");
+	public List<DrinkMoviment> findByDrink(@PathVariable Long idDrink) {
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByDrink(idDrink);
+		if(drinkMovimentList.size() == 0) {
+			throw new DrinkMovimentException();
 		}
+		return drinkMovimentList;
 	}
 
 	@GetMapping("/section/{idSection}")
-	public ResponseEntity<String> findBySection(@PathVariable Long idSection) {
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findBySection(idSection));
-			return ResponseEntity.status(HttpStatus.OK).body(json);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Seção não cadastrada. (" + e.getMessage() + ")");
+	public List<DrinkMoviment> findBySection(@PathVariable Long idSection) {
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findBySection(idSection);
+		if(drinkMovimentList.size() == 0) {
+			throw new DrinkMovimentException();
 		}
+		return drinkMovimentList;
 	}
 
 	@GetMapping("/drinkType/{idDrinkType}")
-	public ResponseEntity<String> findByDrinkType(@PathVariable Long idDrinkType) {
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findByDrinkType(idDrinkType));
-			return ResponseEntity.status(HttpStatus.OK).body(json);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tipo de bebida não cadastrado. ("+ e.getMessage() + ")");
+	public List<DrinkMoviment> findByDrinkType(@PathVariable Long idDrinkType) {
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByDrinkType(idDrinkType);
+		if(drinkMovimentList.size() == 0) {
+			throw new DrinkMovimentException();
 		}
-	}
-
-	@GetMapping("/sectionsToInsert/{drinkType}/{volumeMov}")
-	public ResponseEntity<String> findSectionsToInsert(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findSectionsToInsert(drinkType, volumeMov));
-			return ResponseEntity.status(HttpStatus.OK).body(json);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
-	}
-	
-	@GetMapping("/sectionsToRemove/{drinkType}/{volumeMov}")
-	public ResponseEntity<String> findSectionsToRemove(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
-		try {
-			String json = new Gson().toJson(drinkMovimentService.findSectionsToRemove(drinkType, volumeMov));
-			return ResponseEntity.status(HttpStatus.OK).body(json);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+		return drinkMovimentList;
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> save(@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception {
-		try {
-			DrinkMoviment savedDrinkMoviment = drinkMovimentService.validDrinkMoviment(drinkMovimentDTO);
-			String json = new Gson().toJson(savedDrinkMoviment);
-			return ResponseEntity.status(HttpStatus.CREATED).body(json);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-		
+	public DrinkMoviment save(@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception {
+		return drinkMovimentService.validDrinkMoviment(drinkMovimentDTO);
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<String> deleteById (@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception{
-		try {
-			drinkMovimentService.deleteByDrink(drinkMovimentDTO);
-			return ResponseEntity.status(HttpStatus.OK).body("Retirada realizada.");
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
+	public DrinkMoviment deleteById (@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception{
+		return drinkMovimentService.deleteByDrink(drinkMovimentDTO);
 	}
 }

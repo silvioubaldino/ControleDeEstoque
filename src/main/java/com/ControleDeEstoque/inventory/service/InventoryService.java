@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ControleDeEstoque.inventory.Repository.InventoryRepository;
+import com.ControleDeEstoque.inventory.exception.InventoryException;
 import com.ControleDeEstoque.model.entity.inventory.Inventory;
 
 @Service
@@ -13,6 +14,6 @@ public class InventoryService {
 	InventoryRepository inventoryRepository;
 	
 	public Inventory findById(Long idInventory) {
-		return inventoryRepository.findById(idInventory).get();
+		return inventoryRepository.findById(idInventory).orElseThrow(InventoryException::new);
 	}
 }

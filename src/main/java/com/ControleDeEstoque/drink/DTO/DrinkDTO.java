@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import com.ControleDeEstoque.model.entity.drink.Drink;
 
+import lombok.Data;
+
+@Data
 public class DrinkDTO implements Serializable {
 
 	/**
@@ -17,43 +20,7 @@ public class DrinkDTO implements Serializable {
 
 	private Long idDrinkType;
 
-	public DrinkDTO() {
+	public Drink mappDrinkDTO(DrinkDTO drinkDTO) {		
+		return Drink.builder().drinkName(drinkDTO.getDrinkName()).drinkVolume(drinkDTO.getDrinkVolume()).build();
 	}
-
-	public DrinkDTO(String drinkName, Double drinkVolume, Long idDrinkType) {
-		super();
-		this.drinkName = drinkName;
-		this.drinkVolume = drinkVolume;
-		this.idDrinkType = idDrinkType;
-	}
-
-	public Drink mappDrinkDTO(DrinkDTO drinkDTO) {
-
-		return new Drink(drinkDTO.getDrinkName(), drinkDTO.getDrinkVolume());
-	}
-
-	public String getDrinkName() {
-		return drinkName;
-	}
-
-	public void setDrinkName(String drinkName) {
-		this.drinkName = drinkName;
-	}
-
-	public Double getDrinkVolume() {
-		return drinkVolume;
-	}
-
-	public void setDrinkVolume(Double drinkVolume) {
-		this.drinkVolume = drinkVolume;
-	}
-
-	public Long getIdDrinkType() {
-		return idDrinkType;
-	}
-
-	public void setIdDrinkType(Long idDrinkType) {
-		this.idDrinkType = idDrinkType;
-	}
-
 }

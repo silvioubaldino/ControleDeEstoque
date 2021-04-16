@@ -5,7 +5,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Data
+@AllArgsConstructor @NoArgsConstructor
 public class Inventory {
 
 	@Id
@@ -13,26 +19,4 @@ public class Inventory {
 	private Long idInventory;
 
 	private String typeInventory;
-
-	public Inventory() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public Inventory(String typeInventory) {
-		super();
-		this.typeInventory = typeInventory;
-	}
-
-	public String getTypeInventory() {
-		return typeInventory;
-	}
-
-	public void setTypeInventory(String typeInventory) {
-		this.typeInventory = typeInventory;
-	}
-
-	public Long getIdInventory() {
-		return idInventory;
-	}
-
 }

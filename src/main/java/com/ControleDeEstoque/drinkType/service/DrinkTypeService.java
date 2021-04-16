@@ -1,8 +1,11 @@
 package com.ControleDeEstoque.drinkType.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ControleDeEstoque.drinkType.exception.DrinkTypeException;
 import com.ControleDeEstoque.drinkType.repository.DrinkTypeRepository;
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 
@@ -12,16 +15,16 @@ public class DrinkTypeService {
 	@Autowired
 	DrinkTypeRepository drinkTypeRepository;
 	
-	public Iterable<DrinkType> findAll(){
+	public List<DrinkType> findAll(){
 		return drinkTypeRepository.findAll();
 	}
 	
 	public DrinkType findById(Long idDrinkType) {
-		return drinkTypeRepository.findById(idDrinkType).get();
+		return drinkTypeRepository.findById(idDrinkType).orElseThrow(DrinkTypeException::new);
 	}
 	
-	public DrinkType findByName (String DrinkType) {
-		return drinkTypeRepository.findByDrinkTypeIgnoreCase(DrinkType);
+	public List<DrinkType> findByName (String DrinkType) {
+		return drinkTypeRepository.findByDrinkTypeContainingIgnoreCase(DrinkType);
 	}
 	
 	public DrinkType save (DrinkType drinkType) {
@@ -30,8 +33,7 @@ public class DrinkTypeService {
 	
 	public DrinkType delete (Long idDrinkType) {
 		DrinkType drinkType = findById(idDrinkType);
-		//TODO tratar erro
-		drinkTypeRepository.delete(drinkType);
+		drinkTypeRepository.delete(findById(idDrinkType));
 		return drinkType;
 	}
 }

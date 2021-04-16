@@ -8,7 +8,13 @@ import javax.persistence.Id;
 
 import com.sun.istack.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Data
+@AllArgsConstructor @NoArgsConstructor
 public class DrinkType {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,31 +23,4 @@ public class DrinkType {
 	@NotNull
 	@Column(unique = true)
 	private String drinkType;
-	
-
-	public DrinkType(String drinkType) {
-		super();
-		this.drinkType = drinkType;
-	}
-
-	public DrinkType() {
-	}
-
-	public Long getIdDrinkType() {
-		return idDrinkType;
-	}
-
-	public void setIdDrinkType(Long idDrinkType) {
-		this.idDrinkType = idDrinkType;
-	}
-
-	public String getDrinkType() {
-		return drinkType;
-	}
-
-	public void setDrinkType(String drinkType) {
-		this.drinkType = drinkType;
-	}
-	
-	
 }

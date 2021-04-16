@@ -9,7 +9,7 @@ import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 
 public interface DrinkRepository extends JpaRepository<Drink, Long> {
 
-	List<Drink> findBydrinkNameIgnoreCase(String name);
+	List<Drink> findBydrinkNameContainingIgnoreCase(String name);
 	
 	List<Drink> findDrinkByDrinkType(DrinkType drinkType);	
 	

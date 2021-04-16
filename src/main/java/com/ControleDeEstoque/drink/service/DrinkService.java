@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ControleDeEstoque.drink.DTO.DrinkDTO;
+import com.ControleDeEstoque.drink.exception.DrinkException;
 import com.ControleDeEstoque.drink.repository.DrinkRepository;
 import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
 import com.ControleDeEstoque.model.entity.drink.Drink;
@@ -15,21 +16,21 @@ import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 public class DrinkService {
 
 	@Autowired
-	DrinkRepository drinkRepository;
+	private DrinkRepository drinkRepository;
 	
 	@Autowired
-	DrinkTypeService drinkTypeService;
+	private DrinkTypeService drinkTypeService;
 	
-	public Iterable<Drink> findAll() {
+	public List<Drink> findAll() {
 		return drinkRepository.findAll();
 	}
 	
 	public Drink findById(Long idDrink) {
-		return drinkRepository.findById(idDrink).get();
+		return drinkRepository.findById(idDrink).orElseThrow(DrinkException::new);
 	}
 	
-	public Iterable<Drink> findByName (String name){
-		return drinkRepository.findBydrinkNameIgnoreCase(name);
+	public List<Drink> findByName (String name){
+		return drinkRepository.findBydrinkNameContainingIgnoreCase(name);
 	}
 	
 	public List<Drink> findByDrinkType (Long idDrinkType){
@@ -41,7 +42,7 @@ public class DrinkService {
 		Drink drink = drinkDTO.mappDrinkDTO(drinkDTO);
 		DrinkType drinkType = drinkTypeService.findById(drinkDTO.getIdDrinkType());
 		drink.setDrinkType(drinkType);
-		return drinkRepository.save(drink);		
+		return drinkRepository.save(drink);
 	}
 	
 	public Drink delete (Long idDrink) {
