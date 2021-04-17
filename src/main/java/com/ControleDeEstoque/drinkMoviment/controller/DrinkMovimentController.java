@@ -23,9 +23,9 @@ public class DrinkMovimentController {
 	@Autowired
 	DrinkMovimentService drinkMovimentService;
 
-	@GetMapping
-	public List<DrinkMoviment> findAll() {
-		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findAll();
+	@GetMapping("/findAllOrderBy/{params}")
+	public List<DrinkMoviment> findAll(@PathVariable(required = false) String params) {
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findAll(params);
 		if(drinkMovimentList.size() == 0) {
 			throw new DrinkMovimentException();
 		}
@@ -62,6 +62,20 @@ public class DrinkMovimentController {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
+	}
+	
+	@GetMapping("/movimentType/{movimentTypeString}")
+	public List<DrinkMoviment> findByMovimentType (@PathVariable String movimentTypeString){
+		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByMovimentType(movimentTypeString);
+		if(drinkMovimentList.size() == 0) {
+			throw new DrinkMovimentException();
+		}
+		return drinkMovimentList;
+	}
+	
+	@GetMapping("/totalVolByDrink/{idDrinkType}")
+	public Double getTotalVolByDrinkType (@PathVariable Long idDrinkType) {
+		return drinkMovimentService.getTotalVolByDrinkType(idDrinkType);
 	}
 	
 	@PostMapping

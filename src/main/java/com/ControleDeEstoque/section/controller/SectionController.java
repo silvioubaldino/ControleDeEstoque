@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.section.Section;
 import com.ControleDeEstoque.section.exception.SectionException;
@@ -20,7 +21,10 @@ import com.ControleDeEstoque.section.service.SectionService;
 public class SectionController {
 
 	@Autowired
-	SectionService sectionService;
+	private SectionService sectionService;
+	
+	@Autowired
+	private DrinkTypeService drinkTypeService;
 	
 	@GetMapping
 	public List<Section> findAll() {
@@ -47,18 +51,18 @@ public class SectionController {
 		}
 	}
 
-	@GetMapping("/sectionsToInsert/{drinkType}/{volumeMov}")
-	public List<Section> findSectionsToInsert(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
-		List<Section> sectiontList = sectionService.findSectionsToInsert(drinkType, volumeMov);
+	@GetMapping("/sectionsToInsert/{idDrinkType}/{volumeMov}")
+	public List<Section> findSectionsToInsert(@PathVariable Long idDrinkType, @PathVariable Double volumeMov){
+		List<Section> sectiontList = sectionService.findSectionsToInsert(drinkTypeService.findById(idDrinkType), volumeMov);
 		if(sectiontList.size() == 0) {
 			throw new SectionException(volumeMov);
 		}
 		return sectiontList;
 	}
 	
-	@GetMapping("/sectionsToRemove/{drinkType}/{volumeMov}")
-	public List<Section> findSectionsToRemove(@PathVariable DrinkType drinkType, @PathVariable Double volumeMov){
-		List<Section> sectiontList = sectionService.findSectionsToRemove(drinkType, volumeMov);
+	@GetMapping("/sectionsToRemove/{idDrinkType}/{volumeMov}")
+	public List<Section> findSectionsToRemove(@PathVariable Long idDrinkType, @PathVariable Double volumeMov){
+		List<Section> sectiontList = sectionService.findSectionsToRemove(drinkTypeService.findById(idDrinkType), volumeMov);
 		if(sectiontList.size() == 0) {
 			throw new SectionException(volumeMov, "remove");
 		}

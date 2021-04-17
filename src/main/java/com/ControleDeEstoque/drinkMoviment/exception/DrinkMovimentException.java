@@ -20,5 +20,9 @@ public class DrinkMovimentException extends RuntimeException {
 	public DrinkMovimentException(Long idSection, Double free) {
 		super("O espaço disponivel na seção " + idSection + " é: " + free + ".");
 	}
+	
+	public DrinkMovimentException(Long idSection, Double free, String isRemove) {
+		super("A quantidade disponivel para retirada na seção " + idSection + " é: " + free + ".");
+	}
 
 }
