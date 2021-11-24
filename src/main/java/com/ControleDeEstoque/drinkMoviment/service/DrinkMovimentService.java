@@ -1,12 +1,5 @@
 package com.ControleDeEstoque.drinkMoviment.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import com.ControleDeEstoque.drink.service.DrinkService;
 import com.ControleDeEstoque.drinkMoviment.DTO.DrinkMovimentDTO;
 import com.ControleDeEstoque.drinkMoviment.ennumerator.MovimentType;
@@ -15,11 +8,15 @@ import com.ControleDeEstoque.drinkMoviment.exception.MovimentTypeException;
 import com.ControleDeEstoque.drinkMoviment.exception.OrderByException;
 import com.ControleDeEstoque.drinkMoviment.repository.DrinkMovimentRepository;
 import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
-import com.ControleDeEstoque.model.entity.drink.Drink;
 import com.ControleDeEstoque.model.entity.drink_moviment.DrinkMoviment;
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.section.Section;
 import com.ControleDeEstoque.section.service.SectionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DrinkMovimentService {
@@ -46,25 +43,15 @@ public class DrinkMovimentService {
 	}
 
 	public List<DrinkMoviment> findByDrink(Long idDrink) {
-		Drink drink = drinkService.findById(idDrink);
-		return drinkMovimentRepository.findByDrink(drink);
+		return drinkMovimentRepository.findByDrinkIdDrink(idDrink);
 	}
 
 	public List<DrinkMoviment> findBySection(Long idSection) {
-		Section section = sectionService.findById(idSection);
-		return drinkMovimentRepository.findBySection(section);
+		return drinkMovimentRepository.findBySectionIdSection(idSection);
 	}
 
 	public List<DrinkMoviment> findByDrinkType(Long idDrinkType) {
-		List<Drink> drinks = drinkService.findByDrinkType(idDrinkType);
-		List<DrinkMoviment> drinkMoviments = new ArrayList<>();
-		for (Drink drink : drinks) {
-			List<DrinkMoviment> drinkMoviment = drinkMovimentRepository.findByDrink(drink);
-			if (drinkMoviment != null && drinkMoviment.size() != 0) {
-				drinkMoviments.addAll(drinkMoviment);
-			}
-		}
-		return drinkMoviments;
+		return drinkMovimentRepository.findByDrinkTypeIdDrinkType(idDrinkType);
 	}
 
 	public List<DrinkMoviment> findByMovimentType(String movimentTypeString) {
@@ -77,86 +64,78 @@ public class DrinkMovimentService {
 	}
 
 	public Double getTotalVolByDrinkType(Long idDrinkType) {
-		List<Section> sectionList = sectionService.findAll();
-		Double sum = 0.0;
-		for (Section section : sectionList) {
-			if (section.getDrinkType() == drinkTypeService.findById(idDrinkType)) {
-				sum += section.getBusy();
-			}
-		}
-		return sum;
+		List<Section> sectionList = sectionService.findSectionByDrinkTypeIdDrinkType(idDrinkType);
+		return sectionList.stream()
+				.mapToDouble(section -> section.getBusy())
+				.sum();
 	}
 
-	public DrinkMoviment validDrinkMoviment(DrinkMovimentDTO drinkMovimentDTO) throws Exception {
-		Drink drink = drinkService.findById(drinkMovimentDTO.getIdDrink());
-		Section section = sectionService.findById(drinkMovimentDTO.getIdSection());
-		DrinkMoviment drinkMoviment = drinkMovimentDTO.mapp(drink, section, drinkMovimentDTO);
-		DrinkMoviment savedDrinkMoviment = null;
+	public DrinkMoviment validDrinkMoviment(DrinkMovimentDTO drinkMovimentDTO) {
+		DrinkMoviment drinkMoviment = drinkMovimentDTO.mapp(
+				drinkService.findById(drinkMovimentDTO.getIdDrink()),
+				drinkTypeService.findById(drinkMovimentDTO.getIdDrinkType()),
+				sectionService.findById(drinkMovimentDTO.getIdSection()),
+				drinkMovimentDTO);
 
-		if (section.getDrinkType() == null) {
-			if (drinkMoviment.getVolumeMov() <= sectionService.getCapacity(drink.getDrinkType())) {
-				savedDrinkMoviment = save(drinkMoviment);
-				updateSection(section, drink.getDrinkType());
+		Double free = sectionService.getFree(drinkMoviment.getSection(), drinkMoviment.getDrinkType());
+		if (drinkMoviment.getDrink().getDrinkType() != drinkMoviment.getDrinkType()){
+			throw new DrinkMovimentException(drinkMoviment.getDrink(), drinkMoviment.getDrinkType());
 
-			} else {
-				throw new DrinkMovimentException(section.getIdSection(),
-						sectionService.getCapacity(drink.getDrinkType()));
-			}
-
-		} else if (section.getDrinkType() == drinkMoviment.getDrink().getDrinkType()) {
-			if (drinkMoviment.getVolumeMov() <= sectionService.getFree(section)) {
-				savedDrinkMoviment = save(drinkMoviment);
-
-			} else {
-				throw new DrinkMovimentException(section.getIdSection(), sectionService.getFree(section));
-			}
-
-		} else {
+		} else if (drinkMoviment.getSection().getDrinkType() != null && drinkMoviment.getDrinkType() != drinkMoviment.getSection().getDrinkType()){
 			throw new DrinkMovimentException(MovimentType.ENTRADA);
-		}
 
-		return savedDrinkMoviment;
+		} else if (drinkMoviment.getVolumeMov() > free) {
+			throw new DrinkMovimentException(drinkMoviment.getSection().getIdSection(),
+					sectionService.getCapacity(drinkMoviment.getDrink().getDrinkType()));
+		} else {
+			return prepareToSave(drinkMoviment);
+		}
+	}
+
+	public DrinkMoviment prepareToSave(DrinkMoviment drinkMoviment) {
+		drinkMoviment.setMovimentType(MovimentType.ENTRADA);
+		drinkMoviment.setSection(updateSection(drinkMoviment.getSection(), drinkMoviment.getDrinkType(), drinkMoviment.getVolumeMov()));
+		return drinkMoviment;
 	}
 
 	public DrinkMoviment save(DrinkMoviment drinkMoviment) {
-		drinkMoviment.setMovimentType(MovimentType.ENTRADA);
-		sectionService.updateBusy(drinkMoviment.getSection(), drinkMoviment.getVolumeMov());
 		return drinkMovimentRepository.save(drinkMoviment);
 	}
 
-	public void updateSection(Section section, DrinkType drinkType) {
-		sectionService.updateDrinkType(section, drinkType);
-		sectionService.updateCapacity(section, drinkType);
+	public Section updateSection(Section section, DrinkType drinkType, Double volumeMov) {
+		section = sectionService.updateBusy(section, volumeMov);
+		section = sectionService.updateCapacity(section, drinkType);
+		section = sectionService.updateDrinkType(section, drinkType);
+		return section;
 	}
 
-	public DrinkMoviment deleteByDrink(DrinkMovimentDTO drinkMovimentDTO) throws Exception {
-		Drink drink = drinkService.findById(drinkMovimentDTO.getIdDrink());
-		Section section = sectionService.findById(drinkMovimentDTO.getIdSection());
-		DrinkMoviment drinkMoviment = drinkMovimentDTO.mappDelete(drink, section, drinkMovimentDTO);
+	public DrinkMoviment removeByDrink(DrinkMovimentDTO drinkMovimentDTO) {
+		DrinkMoviment drinkMoviment = drinkMovimentDTO.mapp(
+				drinkService.findById(drinkMovimentDTO.getIdDrink()),
+				drinkTypeService.findById(drinkMovimentDTO.getIdDrinkType()),
+				sectionService.findById(drinkMovimentDTO.getIdSection()),
+				drinkMovimentDTO);
 		drinkMoviment.setMovimentType(MovimentType.SAIDA);
 
-		if (section.getDrinkType() == drinkMoviment.getDrink().getDrinkType()) {
-			if (Double.compare(drinkMoviment.getVolumeMov(), section.getBusy()) < 0) {
-				if (drinkMoviment.getVolumeMov() > 0) {
-					sectionService.updateBusy(section, drinkMoviment.getVolumeMov() * -1);
-				} else {
-					sectionService.updateBusy(section, drinkMoviment.getVolumeMov());
-				}
-				return drinkMovimentRepository.save(drinkMoviment);
-
-			} else if (Double.compare(drinkMoviment.getVolumeMov(), section.getBusy()) == 0) {
-				if (drinkMoviment.getVolumeMov() > 0) {
-					sectionService.updateBusy(section, drinkMoviment.getVolumeMov() * -1);
-				} else {
-					sectionService.updateBusy(section, drinkMoviment.getVolumeMov());
-				}
-				updateSection(section, null);
-				return drinkMovimentRepository.save(drinkMoviment);
-			} else {
-				throw new DrinkMovimentException(section.getIdSection(), section.getBusy(), "true");
-			}
-		} else {
+		if (drinkMoviment.getDrinkType() != drinkMoviment.getSection().getDrinkType()){
 			throw new DrinkMovimentException(MovimentType.SAIDA);
+		} else if (Double.compare(drinkMoviment.getVolumeMov(), drinkMoviment.getSection().getBusy()) > 0) {
+			throw new DrinkMovimentException(drinkMoviment.getSection().getIdSection(), drinkMoviment.getSection().getBusy(), "true");
+
+		} else {
+			Double toUpdateBusy;
+			if (drinkMoviment.getVolumeMov() > 0) {
+				toUpdateBusy = drinkMoviment.getVolumeMov() * -1;
+			} else {
+				toUpdateBusy = drinkMoviment.getVolumeMov();
+				drinkMoviment.setVolumeMov(drinkMoviment.getVolumeMov() * -1);
+			}
+			if (Double.compare(drinkMoviment.getVolumeMov(), drinkMoviment.getSection().getBusy()) == 0){
+				drinkMoviment.setSection(updateSection(drinkMoviment.getSection(), null, toUpdateBusy));
+			} else {
+				drinkMoviment.setSection(updateSection(drinkMoviment.getSection(), drinkMoviment.getDrinkType(), toUpdateBusy));
+			}
+			return save(drinkMoviment);
 		}
 	}
 }

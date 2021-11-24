@@ -14,10 +14,12 @@ public interface DrinkMovimentRepository extends JpaRepository<DrinkMoviment, Lo
 
 	List<DrinkMoviment> findAll(Sort sort);
 	
-	List<DrinkMoviment> findByDrink(Drink drink);
+	List<DrinkMoviment> findByDrinkIdDrink(Long idDrink);
+
+	List<DrinkMoviment> findByDrinkTypeIdDrinkType(Long idDrinkType);
 
 	List<DrinkMoviment> findByMovimentType(MovimentType movimentType);
 		
-	List<DrinkMoviment> findBySection(Section section);
+	List<DrinkMoviment> findBySectionIdSection(Long idSection);
 	
 }

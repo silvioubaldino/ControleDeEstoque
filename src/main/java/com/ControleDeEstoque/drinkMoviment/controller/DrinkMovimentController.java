@@ -26,7 +26,7 @@ public class DrinkMovimentController {
 	@GetMapping("/findAllOrderBy/{params}")
 	public List<DrinkMoviment> findAll(@PathVariable(required = false) String params) {
 		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findAll(params);
-		if(drinkMovimentList.size() == 0) {
+		if(drinkMovimentList.isEmpty()) {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
@@ -40,7 +40,7 @@ public class DrinkMovimentController {
 	@GetMapping("/drink/{idDrink}")
 	public List<DrinkMoviment> findByDrink(@PathVariable Long idDrink) {
 		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByDrink(idDrink);
-		if(drinkMovimentList.size() == 0) {
+		if(drinkMovimentList.isEmpty()) {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
@@ -49,7 +49,7 @@ public class DrinkMovimentController {
 	@GetMapping("/section/{idSection}")
 	public List<DrinkMoviment> findBySection(@PathVariable Long idSection) {
 		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findBySection(idSection);
-		if(drinkMovimentList.size() == 0) {
+		if(drinkMovimentList.isEmpty()) {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
@@ -58,7 +58,7 @@ public class DrinkMovimentController {
 	@GetMapping("/drinkType/{idDrinkType}")
 	public List<DrinkMoviment> findByDrinkType(@PathVariable Long idDrinkType) {
 		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByDrinkType(idDrinkType);
-		if(drinkMovimentList.size() == 0) {
+		if(drinkMovimentList.isEmpty()) {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
@@ -67,24 +67,25 @@ public class DrinkMovimentController {
 	@GetMapping("/movimentType/{movimentTypeString}")
 	public List<DrinkMoviment> findByMovimentType (@PathVariable String movimentTypeString){
 		List<DrinkMoviment> drinkMovimentList = drinkMovimentService.findByMovimentType(movimentTypeString);
-		if(drinkMovimentList.size() == 0) {
+		if(drinkMovimentList.isEmpty()) {
 			throw new DrinkMovimentException();
 		}
 		return drinkMovimentList;
 	}
 	
-	@GetMapping("/totalVolByDrink/{idDrinkType}")
+	@GetMapping("/totalVolByDrinkType/{idDrinkType}")
 	public Double getTotalVolByDrinkType (@PathVariable Long idDrinkType) {
 		return drinkMovimentService.getTotalVolByDrinkType(idDrinkType);
 	}
 	
 	@PostMapping
-	public DrinkMoviment save(@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception {
-		return drinkMovimentService.validDrinkMoviment(drinkMovimentDTO);
+	public DrinkMoviment save(@RequestBody DrinkMovimentDTO drinkMovimentDTO) {
+		DrinkMoviment drinkMoviment = drinkMovimentService.validDrinkMoviment(drinkMovimentDTO);
+		return drinkMovimentService.save(drinkMoviment);
 	}
 	
 	@DeleteMapping
-	public DrinkMoviment deleteById (@RequestBody DrinkMovimentDTO drinkMovimentDTO) throws Exception{
-		return drinkMovimentService.deleteByDrink(drinkMovimentDTO);
+	public DrinkMoviment deleteById (@RequestBody DrinkMovimentDTO drinkMovimentDTO){
+		return drinkMovimentService.removeByDrink(drinkMovimentDTO);
 	}
 }

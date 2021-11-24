@@ -1,11 +1,6 @@
 package com.ControleDeEstoque.model.entity.section;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.inventory.Inventory;
@@ -19,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor @NoArgsConstructor
+@Table(name = "section")
 public class Section {
 
 	@Id

@@ -40,6 +40,16 @@ public class SectionController {
 	public Section findById(@PathVariable Long idSection){	
 		return sectionService.findById(idSection);
 	}
+
+	@GetMapping("/drinkType/{idDrinkType}")
+	public List<Section> findSectionByDrinkTypeIdDrinkType (@PathVariable Long idDrinkType){
+		List<Section> sectionList = sectionService.findSectionByDrinkTypeIdDrinkType(idDrinkType);
+		if (sectionList.isEmpty()){
+			throw new SectionException();
+		} else {
+			return sectionList;
+		}
+	}
 	
 	@GetMapping("/inventory/{idInventory}")
 	public List<Section> findByInventory(@PathVariable Long idInventory){		

@@ -34,19 +34,17 @@ public class SectionService {
 		return sectionRepository.findSectionByInventory(inventory);
 	}
 
+	public List<Section> findSectionByDrinkTypeIdDrinkType (Long idDrinkType){
+		return sectionRepository.findSectionByDrinkTypeIdDrinkType(idDrinkType);
+	}
+
 	public List<Section> findSectionsToInsert(DrinkType drinkType, Double volumeMov) {
 		List<Section> allSections = findAll();
 		List<Section> sectionsToInsert = new ArrayList<>();
 		for (Section section : allSections) {
 			DrinkType eachDrinkType = section.getDrinkType();
-			if (eachDrinkType == null) {
-				if (volumeMov <= getCapacity(drinkType)) {
-					sectionsToInsert.add(section);
-				}
-			} else if (eachDrinkType == drinkType) {
-				if (volumeMov <= getFree(section)) {
-					sectionsToInsert.add(section);
-				}
+			if ((drinkType == eachDrinkType || eachDrinkType == null) && volumeMov <= getFree(section, eachDrinkType)){
+				sectionsToInsert.add(section);
 			}
 		}
 		return sectionsToInsert;
@@ -57,10 +55,8 @@ public class SectionService {
 		List<Section> sectionsToRemove = new ArrayList<>();
 		for (Section section : allSections) {
 			DrinkType eachDrinkType = section.getDrinkType();
-			if (eachDrinkType == drinkType) {
-				if (volumeMov <= section.getBusy()) {
-					sectionsToRemove.add(section);
-				}
+			if (eachDrinkType == drinkType && volumeMov <= section.getBusy()) {
+				sectionsToRemove.add(section);
 			}
 		}
 		return sectionsToRemove;
@@ -72,8 +68,10 @@ public class SectionService {
 	}
 
 	public Section updateDrinkType(Section section, DrinkType drinkType) {
-		section.setDrinkType(drinkType);
-		return sectionRepository.save(section);
+		if (findById(section.getIdSection()).getDrinkType() != drinkType){
+			section.setDrinkType(drinkType);
+		}
+		return section;
 	}
 
 	public Section updateCapacity(Section section, DrinkType drinkType) {
@@ -84,12 +82,12 @@ public class SectionService {
 		} else if (drinkType.getIdDrinkType() == 2) {
 			section.setCapacity(400.0);
 		}
-		return sectionRepository.save(section);
+		return section;
 	}
 
 	public Section updateBusy(Section section, Double volumeMov) {
 		section.setBusy(section.getBusy() + volumeMov);
-		return sectionRepository.save(section);
+		return section;
 	}
 
 	public Double getCapacity(DrinkType drinkType) {
@@ -102,8 +100,8 @@ public class SectionService {
 		}
 	}
 
-	public Double getFree(Section section) {
-		return section.getCapacity() - section.getBusy();
+	public Double getFree(Section section, DrinkType drinkType) {
+		return section.getDrinkType() == null ? getCapacity(drinkType) : section.getCapacity() - section.getBusy();
 	}
 
 	public Section delete(Long idSection) {

@@ -1,14 +1,14 @@
 package com.ControleDeEstoque.drinkMoviment.DTO;
 
-import java.io.Serializable;
-
 import com.ControleDeEstoque.model.entity.drink.Drink;
 import com.ControleDeEstoque.model.entity.drink_moviment.DrinkMoviment;
+import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.section.Section;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -22,24 +22,28 @@ public class DrinkMovimentDTO implements Serializable {
 
 	private Long idDrink;
 
+	private Long idDrinkType;
+
 	private Long idSection;
 
 	private Double volumeMov;
 
 	private String responsible;
 
-	public DrinkMoviment mapp(Drink drink, Section section, DrinkMovimentDTO drinkMovimentDTO) {
+	public DrinkMoviment mapp(Drink drink, DrinkType drinkType, Section section, DrinkMovimentDTO drinkMovimentDTO) {
 		return DrinkMoviment.builder()
 				.drink(drink)
+				.drinkType(drinkType)
 				.section(section)
 				.movimentType(null)
 				.volumeMov(drinkMovimentDTO.getVolumeMov())
 				.responsible(drinkMovimentDTO.getResponsible()).build();
 	}
 
-	public DrinkMoviment mappDelete(Drink drink, Section section, DrinkMovimentDTO drinkMovimentDTO) {
+	public DrinkMoviment mappDelete(Drink drink, DrinkType drinkType, Section section, DrinkMovimentDTO drinkMovimentDTO) {
 		return DrinkMoviment.builder()
 				.drink(drink)
+				.drinkType(drinkType)
 				.section(section)
 				.movimentType(null)
 				.volumeMov(drinkMovimentDTO.getVolumeMov())
