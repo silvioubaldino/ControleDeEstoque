@@ -1,17 +1,18 @@
 package com.ControleDeEstoque.section.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.ControleDeEstoque.drinkType.exception.DrinkTypeException;
+import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
 import com.ControleDeEstoque.inventory.service.InventoryService;
 import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.inventory.Inventory;
 import com.ControleDeEstoque.model.entity.section.Section;
 import com.ControleDeEstoque.section.exception.SectionException;
 import com.ControleDeEstoque.section.repository.SectionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SectionService {
@@ -20,6 +21,8 @@ public class SectionService {
 	private SectionRepository sectionRepository;
 	@Autowired
 	private InventoryService inventoryService;
+	@Autowired
+	private DrinkTypeService drinkTypeService;
 
 	public List<Section> findAll() {
 		return sectionRepository.findAll();
@@ -38,12 +41,13 @@ public class SectionService {
 		return sectionRepository.findSectionByDrinkTypeIdDrinkType(idDrinkType);
 	}
 
-	public List<Section> findSectionsToInsert(DrinkType drinkType, Double volumeMov) {
+	public List<Section> findSectionsToInsert(Long idDrinkType, Double volumeMov) {
+		DrinkType drinkType = drinkTypeService.findById(idDrinkType);
 		List<Section> allSections = findAll();
 		List<Section> sectionsToInsert = new ArrayList<>();
 		for (Section section : allSections) {
-			DrinkType eachDrinkType = section.getDrinkType();
-			if ((drinkType == eachDrinkType || eachDrinkType == null) && volumeMov <= getFree(section, eachDrinkType)){
+			DrinkType eachDrinkType = section.getDrinkType() != null ? section.getDrinkType() : drinkType;
+			if ((drinkType == eachDrinkType || eachDrinkType == null) && volumeMov <= calcFree(section, eachDrinkType)){
 				sectionsToInsert.add(section);
 			}
 		}
@@ -90,18 +94,17 @@ public class SectionService {
 		return section;
 	}
 
-	public Double getCapacity(DrinkType drinkType) {
+	public Double calcCapacity(DrinkType drinkType) {
 		if (drinkType.getIdDrinkType() == 1) {
 			return 500.0;
 		} else if (drinkType.getIdDrinkType() == 2) {
 			return 400.0;
-		} else {
-			return null;
 		}
+		throw new DrinkTypeException();
 	}
 
-	public Double getFree(Section section, DrinkType drinkType) {
-		return section.getDrinkType() == null ? getCapacity(drinkType) : section.getCapacity() - section.getBusy();
+	public Double calcFree(Section section, DrinkType drinkType) {
+		return section.getDrinkType() == null ? calcCapacity(drinkType) : section.getCapacity() - section.getBusy();
 	}
 
 	public Section delete(Long idSection) {

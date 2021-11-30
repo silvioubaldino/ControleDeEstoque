@@ -1,20 +1,13 @@
 package com.ControleDeEstoque.section.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ControleDeEstoque.drinkType.service.DrinkTypeService;
-import com.ControleDeEstoque.model.entity.drink_type.DrinkType;
 import com.ControleDeEstoque.model.entity.section.Section;
 import com.ControleDeEstoque.section.exception.SectionException;
 import com.ControleDeEstoque.section.service.SectionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/section")
@@ -29,7 +22,7 @@ public class SectionController {
 	@GetMapping
 	public List<Section> findAll() {
 		List<Section> sectionList = sectionService.findAll();
-		if (sectionList.size() == 0) {
+		if (sectionList.isEmpty()) {
 			throw new SectionException();
 		}else {
 			return sectionList;			
@@ -54,7 +47,7 @@ public class SectionController {
 	@GetMapping("/inventory/{idInventory}")
 	public List<Section> findByInventory(@PathVariable Long idInventory){		
 		List<Section> sectionList = sectionService.findByInventory(idInventory);
-		if (sectionList.size() == 0) {
+		if (sectionList.isEmpty()) {
 			throw new SectionException();
 		}else {
 			return sectionList;			
@@ -63,20 +56,20 @@ public class SectionController {
 
 	@GetMapping("/sectionsToInsert/{idDrinkType}/{volumeMov}")
 	public List<Section> findSectionsToInsert(@PathVariable Long idDrinkType, @PathVariable Double volumeMov){
-		List<Section> sectiontList = sectionService.findSectionsToInsert(drinkTypeService.findById(idDrinkType), volumeMov);
-		if(sectiontList.size() == 0) {
+		List<Section> sectionList = sectionService.findSectionsToInsert(idDrinkType, volumeMov);
+		if(sectionList.isEmpty()) {
 			throw new SectionException(volumeMov);
 		}
-		return sectiontList;
+		return sectionList;
 	}
 	
 	@GetMapping("/sectionsToRemove/{idDrinkType}/{volumeMov}")
 	public List<Section> findSectionsToRemove(@PathVariable Long idDrinkType, @PathVariable Double volumeMov){
-		List<Section> sectiontList = sectionService.findSectionsToRemove(drinkTypeService.findById(idDrinkType), volumeMov);
-		if(sectiontList.size() == 0) {
+		List<Section> sectionList = sectionService.findSectionsToRemove(drinkTypeService.findById(idDrinkType), volumeMov);
+		if(sectionList.isEmpty()) {
 			throw new SectionException(volumeMov, "remove");
 		}
-		return sectiontList;
+		return sectionList;
 	}
 	
 	@PostMapping("/{idInventory}")

@@ -66,7 +66,7 @@ public class DrinkMovimentService {
 	public Double getTotalVolByDrinkType(Long idDrinkType) {
 		List<Section> sectionList = sectionService.findSectionByDrinkTypeIdDrinkType(idDrinkType);
 		return sectionList.stream()
-				.mapToDouble(section -> section.getBusy())
+				.mapToDouble(Section::getBusy)
 				.sum();
 	}
 
@@ -77,7 +77,7 @@ public class DrinkMovimentService {
 				sectionService.findById(drinkMovimentDTO.getIdSection()),
 				drinkMovimentDTO);
 
-		Double free = sectionService.getFree(drinkMoviment.getSection(), drinkMoviment.getDrinkType());
+		Double free = sectionService.calcFree(drinkMoviment.getSection(), drinkMoviment.getDrinkType());
 		if (drinkMoviment.getDrink().getDrinkType() != drinkMoviment.getDrinkType()){
 			throw new DrinkMovimentException(drinkMoviment.getDrink(), drinkMoviment.getDrinkType());
 
@@ -86,7 +86,7 @@ public class DrinkMovimentService {
 
 		} else if (drinkMoviment.getVolumeMov() > free) {
 			throw new DrinkMovimentException(drinkMoviment.getSection().getIdSection(),
-					sectionService.getCapacity(drinkMoviment.getDrink().getDrinkType()));
+					sectionService.calcCapacity(drinkMoviment.getDrink().getDrinkType()));
 		} else {
 			return prepareToSave(drinkMoviment);
 		}
